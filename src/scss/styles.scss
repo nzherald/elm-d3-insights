@@ -1,7 +1,14 @@
 @import "~bourbon/core/bourbon";
 @import "base/base";
 
+body {
+  margin: 0;
+}
+
 .content-main {
+  width: 1px; // iframe support
+  min-width: 100%;
+
   .chart {
     display: none;
     position: relative;
