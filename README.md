@@ -12,3 +12,12 @@ separately.
 Either `yarn && yarn dev` or `npm install && npm run dev`
 
 
+## Export into a fresh directory
+
+```
+mkdir XXXX
+git archive HEAD | (cd !$ && tar xf -)
+```
+
+
+
