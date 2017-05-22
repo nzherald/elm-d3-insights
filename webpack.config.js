@@ -37,7 +37,23 @@ module.exports = {
             {
                 test: /\.(gif|png|jpe?g|svg)$/i,
                 loader: 'url-loader'
-            }
+            },
+            {
+               test: /\.yaml$/,
+               loader: 'yml-loader'
+           },
+           {
+             loader: 'babel-loader',
+             include: [
+               path.resolve(__dirname, "src"),
+             ],
+             test: /\.(js|es6)$/,
+             exclude: /(node_modules|bower_components)/,
+             query: {
+               plugins: ['transform-runtime'],
+               presets: ['es2015', 'stage-0'],
+             }
+           }
         ]
     },
   plugins: [

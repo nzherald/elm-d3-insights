@@ -1,7 +1,7 @@
 port module Main exposing (..)
 
-import Html exposing (Html, text, div, button)
-import Html.Attributes exposing (id, class, classList)
+import Html exposing (Html, text, div, button, img)
+import Html.Attributes exposing (id, class, classList, src)
 import Html.Events exposing (onClick)
 import Markdown
 import Json.Decode as Json
@@ -73,8 +73,11 @@ update msg model =
 
 view : Model -> Html Msg
 view { paragraphs, data, showChart, clicked } =
-    div []
-        [ div [ class "splash" ] [ div [ class "splash-text" ] [ text "Insights" ] ]
+    div [ class "content-main" ]
+        [ div [ class "splash" ]
+            [ div [ class "splash-text" ] []
+            , img [ src "/images/insights-masthead.png" ] []
+            ]
         , div [ class "content" ]
             [ Markdown.toHtml [ class "markdown" ] paragraphs.intro
             , div [ class "button-wrap" ]
