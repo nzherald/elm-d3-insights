@@ -19,6 +19,10 @@ type alias Model =
     , clicked : Maybe String
     }
 
+type alias ChartData =
+    { node : String
+    , data : List (String, Float)
+    }
 
 type alias Paragraphs =
     { intro : String
@@ -55,7 +59,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         LoadData (Ok d) ->
-            { model | data = d } ! [ exportData <| List.sortBy first d ]
+            { model | data = d } ! [ exportData <| [ChartData "chart" (List.sortBy first d)] ]
 
         LoadData (Err e) ->
             let
@@ -122,7 +126,7 @@ getData =
     Http.send LoadData <| Http.get "/data/data.json" decodeData
 
 
-port exportData : List ( String, Float ) -> Cmd msg
+port exportData : List ChartData -> Cmd msg
 
 
 port barClick : (( String, Float ) -> msg) -> Sub msg

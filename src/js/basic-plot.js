@@ -1,6 +1,6 @@
 import { scaleLinear, scaleBand } from 'd3-scale'
 import { max } from 'd3-array'
-import { select } from 'd3-selection'
+import { select } from 'd3-jetpack'
 import { SvgChart } from 'd3kit';
 import { axisBottom, axisLeft } from 'd3-axis';
 
