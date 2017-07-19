@@ -20,6 +20,12 @@ type alias Model =
     }
 
 
+type alias D3Data =
+    { node : String
+    , data : List ( String, Float )
+    }
+
+
 type alias Paragraphs =
     { intro : String
     }
@@ -55,7 +61,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         LoadData (Ok d) ->
-            { model | data = d } ! [ exportData <| List.sortBy first d ]
+            { model | data = d } ! [ exportData { node = "d3-wrapper", data = List.sortBy first d } ]
 
         LoadData (Err e) ->
             let
@@ -122,7 +128,7 @@ getData =
     Http.send LoadData <| Http.get "/data/data.json" decodeData
 
 
-port exportData : List ( String, Float ) -> Cmd msg
+port exportData : D3Data -> Cmd msg
 
 
 port barClick : (( String, Float ) -> msg) -> Sub msg

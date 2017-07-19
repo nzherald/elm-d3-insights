@@ -6,8 +6,9 @@ import { axisBottom, axisLeft } from 'd3-axis';
 
 
 
-export default (data, port) => {
-  let chart = new SvgChart('#d3-wrapper', {
+export default (d3data, port) => {
+  const data = d3data.port;
+  let chart = new SvgChart('#' + d3data.node, {
     margin: {top: 20, right: 20, bottom: 30, left: 40},
     initialWidth: 890,
     initialHeight: 500
@@ -36,7 +37,7 @@ export default (data, port) => {
   let yAxis = axisLeft()
     .scale(y)
     .ticks(10, "%");
-
+  const data = d3data.data;
   x.domain(data.map(d => { return d[0]; }));
   y.domain([0, max(data, d => { return d[1]; })]);
 

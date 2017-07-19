@@ -4,6 +4,6 @@ import './scss/styles.scss';
 import plot from './js/basic-plot.js'
 
 let app = Elm.Main.fullscreen({markdown: md});
-app.ports.exportData.subscribe(data => plot(data, app.ports.barClick.send));
+app.ports.exportData.subscribe(d3data => plot(d3data, app.ports.barClick.send));
 
 
