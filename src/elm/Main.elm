@@ -6,7 +6,7 @@ import Html.Events exposing (onClick)
 import Markdown
 import Json.Decode as Json
 import Http
-import Tuple exposing (first)
+import Tuple exposing (..)
 
 
 -- LOCAL
@@ -16,7 +16,8 @@ type alias Model =
     { paragraphs : Paragraphs
     , data : List ( String, Float )
     , showChart : Bool
-    , clicked : Maybe String
+    , clicked1 : Maybe String
+    , clicked2 : Maybe String
     }
 
 
@@ -39,7 +40,7 @@ type alias Flags =
 type Msg
     = LoadData (Result Http.Error (List ( String, Float )))
     | ToggleChart
-    | BarClick ( String, Float )
+    | BarClick ( String, ( String, Float ) )
 
 
 main : Program Flags Model Msg
@@ -54,14 +55,32 @@ main =
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
-    Model flags.markdown [] True Nothing ! [ getData ]
+    Model flags.markdown [] True Nothing Nothing
+        ! [ getData
+          , exportData
+                [ { node = "chart1", data = [] }
+                , { node = "chart2", data = [] }
+                ]
+
+          -- this is a little contrived but it demonstrates the feature we want
+          -- which is for the plotting function to callable multiple times
+          ]
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         LoadData (Ok d) ->
-            { model | data = d } ! [ exportData { node = "d3-wrapper", data = List.sortBy first d } ]
+            { model | data = d }
+                ! [ exportData
+                        [ { node = "chart1", data = List.sortBy first d }
+                        , { node = "chart2"
+                          , data =
+                                List.reverse <|
+                                    List.sortBy second d
+                          }
+                        ]
+                  ]
 
         LoadData (Err e) ->
             let
@@ -73,50 +92,63 @@ update msg model =
         ToggleChart ->
             { model | showChart = not model.showChart } ! []
 
-        BarClick ( letter, _ ) ->
-            { model | clicked = Just letter } ! []
+        BarClick ( node, ( letter, _ ) ) ->
+            case node of
+                "chart1" ->
+                    { model | clicked1 = Just letter } ! []
+
+                "chart2" ->
+                    { model | clicked2 = Just letter } ! []
+
+                _ ->
+                    model ! []
 
 
 view : Model -> Html Msg
-view { paragraphs, data, showChart, clicked } =
-    div [ class "content-main" ]
-        [ div [ class "splash" ]
-            [ div [ class "splash-text" ] []
-            , img [ src "/images/insights-masthead.png" ] []
-            ]
-        , div [ class "content" ]
-            [ Markdown.toHtml [ class "markdown" ] paragraphs.intro
-            , div [ class "button-wrap" ]
-                [ div []
-                    [ text <|
-                        ("Click on the button to "
-                            ++ (if showChart then
-                                    "hide"
-                                else
-                                    "show"
-                               )
-                            ++ " the chart"
-                        )
-                    ]
-                , button [ onClick ToggleChart ] [ text "Toggle chart" ]
-                ]
-            , div
-                [ classList
-                    [ ( "show-chart", showChart )
-                    , ( "chart", True )
-                    ]
-                ]
-                [ div [ id "d3-wrapper" ] []
+view { paragraphs, data, showChart, clicked1, clicked2 } =
+    let
+        chart v tgt =
+            div [ class "chart-wrapper" ]
+                [ div [ class "d3-wrapper", id v ] []
                 , div [ class "chart-caption" ] [ text "Letter use frequencies in English" ]
-                , case clicked of
+                , case tgt of
                     Just letter ->
                         div [ class "chart-annotation" ] [ text <| "The letter " ++ letter ++ " was clicked on" ]
 
                     _ ->
                         div [] []
                 ]
+    in
+        div [ class "content-main" ]
+            [ div [ class "splash" ]
+                [ div [ class "splash-text" ] []
+                , img [ src "/images/insights-masthead.png" ] []
+                ]
+            , div [ class "content" ]
+                [ Markdown.toHtml [ class "markdown" ] paragraphs.intro
+                , div [ class "button-wrap" ]
+                    [ div []
+                        [ text <|
+                            ("Click on the button to "
+                                ++ (if showChart then
+                                        "hide"
+                                    else
+                                        "show"
+                                   )
+                                ++ " the chart"
+                            )
+                        ]
+                    , button [ onClick ToggleChart ] [ text "Toggle charts" ]
+                    ]
+                , div
+                    [ classList
+                        [ ( "show-chart", showChart )
+                        , ( "chart", True )
+                        ]
+                    ]
+                    (List.map2 chart [ "chart1", "chart2" ] [ clicked1, clicked2 ])
+                ]
             ]
-        ]
 
 
 decodeData : Json.Decoder (List ( String, Float ))
@@ -128,10 +160,10 @@ getData =
     Http.send LoadData <| Http.get "/data/data.json" decodeData
 
 
-port exportData : D3Data -> Cmd msg
+port exportData : List D3Data -> Cmd msg
 
 
-port barClick : (( String, Float ) -> msg) -> Sub msg
+port barClick : (( String, ( String, Float ) ) -> msg) -> Sub msg
 
 
 subscriptions : Model -> Sub Msg

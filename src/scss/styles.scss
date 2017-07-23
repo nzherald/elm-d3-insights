@@ -27,7 +27,9 @@ body {
       right: 10%;
       top: 5%;
     }
-  #d3-wrapper {
+    .chart-wrapper {
+      position: relative;
+  .d3-wrapper {
     .bar {
       fill: thistle;
     }
@@ -52,6 +54,7 @@ body {
     }
   }
   }
+}
 
   .markdown {
     max-width: 680px;

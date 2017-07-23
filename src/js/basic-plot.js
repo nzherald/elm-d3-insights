@@ -1,35 +1,28 @@
 import { scaleLinear, scaleBand } from 'd3-scale'
-import { max } from 'd3-array'
-import { select } from 'd3-selection'
-import { SvgChart } from 'd3kit';
+import { max } from 'd3-array';
+import { select, selectAll } from 'd3-selection';
 import { axisBottom, axisLeft } from 'd3-axis';
+import { conventions, f } from 'd3-jetpack';
+import { extend } from 'lodash';
 
-
+const ƒ = f;
 
 export default (d3data, port) => {
-  const data = d3data.port;
-  let chart = new SvgChart('#' + d3data.node, {
-    margin: {top: 20, right: 20, bottom: 30, left: 40},
-    initialWidth: 890,
-    initialHeight: 500
-  });
+  const renderChart = (d, i, n) => {
+    const svg = select(n[i]).selectAll('svg'); // do NOT select here
 
-  chart.fit({width: '100%'}, true);
-  chart.on("resize", (w, h) => {
-    chart.width(w);
-    chart.height(h);
-    render();
-  });
-
-  const render = () => {
+    const chart = svg.data()[0];
+    const data = d.data;
+    const node = d.node;
+    console.log(chart);
 
   let x = scaleBand()
-    .range([0, chart.getInnerWidth()])
+    .range([0, chart.width])
     .paddingInner(0.1)
     .round(0.1);
 
   let y = scaleLinear()
-    .range([chart.getInnerHeight(), 0]);
+    .range([chart.height, 0]);
 
   let xAxis = axisBottom()
     .scale(x);
@@ -37,22 +30,21 @@ export default (d3data, port) => {
   let yAxis = axisLeft()
     .scale(y)
     .ticks(10, "%");
-  const data = d3data.data;
   x.domain(data.map(d => { return d[0]; }));
   y.domain([0, max(data, d => { return d[1]; })]);
 
-    let xg = chart.rootG.selectAll(".x.axis")
+    let xg = chart.svg.selectAll(".x.axis")
       .data([data])
-      .attr("transform", "translate(0," + chart.getInnerHeight() + ")")
+      .attr("transform", "translate(0," + chart.height + ")")
       .call(xAxis);
 
     xg.enter()
       .append("g")
       .attr("class", "x axis")
-      .attr("transform", "translate(0," + chart.getInnerHeight() + ")")
+      .attr("transform", "translate(0," + chart.height + ")")
       .call(xAxis);
 
-    let yg = chart.rootG.selectAll(".y.axis")
+    let yg = chart.svg.selectAll(".y.axis")
       .data([data])
       .call(yAxis);
 
@@ -66,22 +58,41 @@ export default (d3data, port) => {
       .style("text-anchor", "end")
       .text("Frequency");
 
-    let barG = chart.rootG.selectAll(".bar")
+    let barG = chart.svg.selectAll(".bar")
       .data(data)
       .attr("x", d => { return x(d[0]); })
       .attr("width", x.bandwidth())
       .attr("y", d => { return y(d[1]); })
-      .attr("height", d => { return chart.getInnerHeight() - y(d[1]); });
+      .attr("height", d => { return chart.height - y(d[1]); });
 
     barG.enter().append("rect")
       .attr("class", "bar")
       .attr("x", d => { return x(d[0]); })
       .attr("width", x.bandwidth())
       .attr("y", d => { return y(d[1]); })
-      .attr("height", d => { return chart.getInnerHeight() - y(d[1]); })
+      .attr("height", d => { return chart.height - y(d[1]); })
       .on('click', d => {
-        port(d);
+        port([node, d]);
       });
+
   }
+  const init = (d, i, n) => {
+    const sel = select(n[i]);
+    const chart = conventions({parentSel: sel,
+      margin: {top: 20, right: 20, bottom: 30, left: 40},
+      totalWidth: 890,
+      totalHeight: 500
+    });
+
+    sel.select('svg').data([chart]);
+  }
+  const wrap = selectAll('.d3-wrapper').data(d3data);
+  const wrapEnter = wrap.enter().append('div.d3-wrapper');
+  
+  const inner = wrap.selectAll('.d3-inner').data(d => [d]);
+  inner.enter().append('div.d3-inner').each(init).merge(inner)
+    .each(renderChart);
+  
+  
 }
 
