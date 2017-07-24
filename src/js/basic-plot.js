@@ -3,7 +3,7 @@ import { max } from 'd3-array';
 import { select, selectAll } from 'd3-selection';
 import { axisBottom, axisLeft } from 'd3-axis';
 import { conventions, f } from 'd3-jetpack';
-import { extend } from 'lodash';
+import { update } from 'lodash';
 
 const ƒ = f;
 
@@ -14,7 +14,8 @@ export default (d3data, port) => {
     const chart = svg.data()[0];
     const data = d.data;
     const node = d.node;
-    console.log(chart);
+    // split out size change and data change methods - use _.update to modify
+    // the fields of conventions and then reapply
 
   let x = scaleBand()
     .range([0, chart.width])
@@ -78,10 +79,11 @@ export default (d3data, port) => {
   }
   const init = (d, i, n) => {
     const sel = select(n[i]);
+    const rect = n[i].getBoundingClientRect();
     const chart = conventions({parentSel: sel,
       margin: {top: 20, right: 20, bottom: 30, left: 40},
-      totalWidth: 890,
-      totalHeight: 500
+      totalWidth: rect.width,
+      totalHeight: rect.height
     });
 
     sel.select('svg').data([chart]);

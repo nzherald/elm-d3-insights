@@ -7,9 +7,7 @@ import Markdown
 import Json.Decode as Json
 import Http
 import Tuple exposing (..)
-
-
--- LOCAL
+import Window exposing (Size, resizes)
 
 
 type alias Model =
@@ -41,6 +39,7 @@ type Msg
     = LoadData (Result Http.Error (List ( String, Float )))
     | ToggleChart
     | BarClick ( String, ( String, Float ) )
+    | Resize Size
 
 
 main : Program Flags Model Msg
@@ -55,32 +54,40 @@ main =
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
-    Model flags.markdown [] True Nothing Nothing
-        ! [ getData
-          , exportData
-                [ { node = "chart1", data = [] }
-                , { node = "chart2", data = [] }
-                ]
+    let
+        initModel =
+            Model flags.markdown [] True Nothing Nothing
+    in
+        initModel
+            ! [ getData
+              , export initModel
 
-          -- this is a little contrived but it demonstrates the feature we want
-          -- which is for the plotting function to callable multiple times
-          ]
+              -- this is a little contrived but it demonstrates the feature we want
+              -- which is for the plotting function to callable multiple times
+              ]
+
+
+export : Model -> Cmd Msg
+export model =
+    exportData
+        [ { node = "chart1", data = List.sortBy first model.data }
+        , { node = "chart2"
+          , data =
+                List.reverse <|
+                    List.sortBy second model.data
+          }
+        ]
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         LoadData (Ok d) ->
-            { model | data = d }
-                ! [ exportData
-                        [ { node = "chart1", data = List.sortBy first d }
-                        , { node = "chart2"
-                          , data =
-                                List.reverse <|
-                                    List.sortBy second d
-                          }
-                        ]
-                  ]
+            let
+                newModel =
+                    { model | data = d }
+            in
+                newModel ! [ export newModel ]
 
         LoadData (Err e) ->
             let
@@ -102,6 +109,9 @@ update msg model =
 
                 _ ->
                     model ! []
+
+        Resize _ ->
+            model ! [ export model ]
 
 
 view : Model -> Html Msg
