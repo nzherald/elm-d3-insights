@@ -178,4 +178,7 @@ port barClick : (( String, ( String, Float ) ) -> msg) -> Sub msg
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    barClick BarClick
+    Sub.batch
+        [ barClick BarClick
+        , resizes Resize
+        ]
