@@ -3,7 +3,7 @@ import { max } from 'd3-array';
 import { select, selectAll } from 'd3-selection';
 import { axisBottom, axisLeft } from 'd3-axis';
 import { conventions, f } from 'd3-jetpack';
-import { update, head } from 'lodash';
+import { update, head, unset } from 'lodash';
 
 const ƒ = f;
 
@@ -40,14 +40,11 @@ export default (d3data, port) => {
       .text("Frequency");
 
     const barG = svg.selectAll(".bar")
-      .data(data)
-      .attr("x", d => { return x(d[0]); })
-      .attr("width", x.bandwidth())
-      .attr("y", d => { return y(d[1]); })
-      .attr("height", d => { return height - y(d[1]); });
+      .data(data);
 
     barG.enter().append("rect")
       .attr("class", "bar")
+    .merge(barG)
       .attr("x", d => { return x(d[0]); })
       .attr("width", x.bandwidth())
       .attr("y", d => { return y(d[1]); })
@@ -91,11 +88,13 @@ export default (d3data, port) => {
       chart.totalWidth = rect.width
       chart.width = rect.width - chart.margin.left - chart.margin.right
       update(chart, 'x', x => x.range([0, chart.width]))
+      svgNode.attr('width', rect.width)
     }
     if (rect.height !== chart.totalHeight) {
       chart.totalHeight = rect.height
       chart.height = rect.height - chart.margin.top - chart.margin.bottom
       update(chart, 'y', y => y.range([chart.height, 0]))
+      svgNode.attr('height', rect.height)
     }
     update(chart, 'x', x => x.domain(data.map(d => { return d[0]; })));
     update(chart, 'y', y => y.domain([0, max(data, d => { return d[1]; })]))
