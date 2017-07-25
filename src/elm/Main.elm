@@ -14,14 +14,13 @@ type alias Model =
     { paragraphs : Paragraphs
     , data : List ( String, Float )
     , showChart : Bool
-    , clicked1 : Maybe String
-    , clicked2 : Maybe String
+    , clicked : List (Maybe String)
     }
 
 
 type alias D3Data =
-    { node : String
-    , data : List ( String, Float )
+    { data : List (List ( String, Float ))
+    , wrapperClass : String
     }
 
 
@@ -38,7 +37,7 @@ type alias Flags =
 type Msg
     = LoadData (Result Http.Error (List ( String, Float )))
     | ToggleChart
-    | BarClick ( String, ( String, Float ) )
+    | BarClick ( Int, ( String, Float ) )
     | Resize Size
 
 
@@ -56,7 +55,7 @@ init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
         initModel =
-            Model flags.markdown [] True Nothing Nothing
+            Model flags.markdown [] True [ Nothing, Nothing ]
     in
         initModel
             ! [ getData
@@ -69,14 +68,13 @@ init flags =
 
 export : Model -> Cmd Msg
 export model =
-    exportData
-        [ { node = "chart1", data = List.sortBy first model.data }
-        , { node = "chart2"
-          , data =
-                List.reverse <|
-                    List.sortBy second model.data
-          }
-        ]
+    exportData <|
+        D3Data
+            [ List.sortBy first model.data
+            , List.reverse <|
+                List.sortBy second model.data
+            ]
+            "d3-wrapper"
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -99,27 +97,30 @@ update msg model =
         ToggleChart ->
             { model | showChart = not model.showChart } ! []
 
-        BarClick ( node, ( letter, _ ) ) ->
-            case node of
-                "chart1" ->
-                    { model | clicked1 = Just letter } ! []
-
-                "chart2" ->
-                    { model | clicked2 = Just letter } ! []
-
-                _ ->
-                    model ! []
+        BarClick ( idx, ( letter, _ ) ) ->
+            { model
+                | clicked =
+                    List.indexedMap
+                        (\i c ->
+                            if i == Debug.log "idx" idx then
+                                Just letter
+                            else
+                                c
+                        )
+                        model.clicked
+            }
+                ! []
 
         Resize _ ->
             model ! [ export model ]
 
 
 view : Model -> Html Msg
-view { paragraphs, data, showChart, clicked1, clicked2 } =
+view { paragraphs, data, showChart, clicked } =
     let
         chart v tgt =
             div [ class "chart-wrapper" ]
-                [ div [ class "d3-wrapper", id v ] []
+                [ div [ class "d3-wrapper" ] []
                 , div [ class "chart-caption" ] [ text "Letter use frequencies in English" ]
                 , case tgt of
                     Just letter ->
@@ -156,7 +157,7 @@ view { paragraphs, data, showChart, clicked1, clicked2 } =
                         , ( "chart", True )
                         ]
                     ]
-                    (List.map2 chart [ "chart1", "chart2" ] [ clicked1, clicked2 ])
+                    (List.indexedMap chart <| Debug.log "c" clicked)
                 ]
             ]
 
@@ -170,10 +171,10 @@ getData =
     Http.send LoadData <| Http.get "/data/data.json" decodeData
 
 
-port exportData : List D3Data -> Cmd msg
+port exportData : D3Data -> Cmd msg
 
 
-port barClick : (( String, ( String, Float ) ) -> msg) -> Sub msg
+port barClick : (( Int, ( String, Float ) ) -> msg) -> Sub msg
 
 
 subscriptions : Model -> Sub Msg

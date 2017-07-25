@@ -9,8 +9,8 @@ const ƒ = f;
 
 export default (d3data, port) => {
   const renderChart = (d, i, n) => {
-    const data = d.data;
-    const node = d.node;
+    const data = d.d;
+    const chartIdx = d.i;
     // docs say this === n[i] but this is undefined ...
     const { x, y, xAxis, yAxis, height, width, svg, drawAxis } = updateChart(n[i], data);
 
@@ -50,7 +50,7 @@ export default (d3data, port) => {
       .attr("y", d => { return y(d[1]); })
       .attr("height", d => { return height - y(d[1]); })
       .on('click', d => {
-        port([node, d]);
+        port([chartIdx, d]);
       });
   }
 
@@ -103,8 +103,8 @@ export default (d3data, port) => {
     return chart;
   }
 
-  const wrap = selectAll('.d3-wrapper').data(d3data);
-  const inner = wrap.selectAll('.d3-inner').data(d => [d]);
+  const wrap = selectAll('.' + d3data.wrapperClass).data(d3data.data);
+  const inner = wrap.selectAll('.d3-inner').data((d,i) => [{d:d, i:i}]);
   inner.enter().append('div.d3-inner').each(init).merge(inner)
     .each(renderChart);
 
