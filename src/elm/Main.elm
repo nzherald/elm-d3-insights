@@ -102,7 +102,7 @@ update msg model =
                 | clicked =
                     List.indexedMap
                         (\i c ->
-                            if i == Debug.log "idx" idx then
+                            if i == idx then
                                 Just letter
                             else
                                 c
@@ -157,7 +157,7 @@ view { paragraphs, data, showChart, clicked } =
                         , ( "chart", True )
                         ]
                     ]
-                    (List.indexedMap chart <| Debug.log "c" clicked)
+                    (List.indexedMap chart clicked)
                 ]
             ]
 
