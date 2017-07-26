@@ -51,6 +51,19 @@ main =
         }
 
 
+{-| Records can be created two different ways:
+
+Model flags.markdown [] True [ Nothing, Nothing ]
+
+is the same as
+
+{ paragraphs = flags.markdown
+, data = []
+, showCharts = True,
+, clicked = [Nothing, Nothing]
+}
+
+-}
 init : Flags -> ( Model, Cmd Msg )
 init flags =
     let
@@ -168,7 +181,8 @@ decodeData =
 
 
 getData =
-    Http.send LoadData <| Http.get "/data/data.json" decodeData
+    Http.get "/data/data.json" decodeData
+        |> Http.send LoadData
 
 
 port exportData : D3Data -> Cmd msg

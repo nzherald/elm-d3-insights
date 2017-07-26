@@ -7,8 +7,6 @@ scaffolding and d3 for the visuals. Text is written in markdown files
 and passed into the elm app and sass/scss is used for styles. Everything
 is held togther with webpack.
 
-_(Currently d3-kit is used to scaffold the d3, but I would like to convert it
-to d3-jetpack)_
 
 
 ## Quickstart
