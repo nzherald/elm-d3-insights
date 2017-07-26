@@ -20,7 +20,7 @@ mkdir XXXX
 git archive HEAD | (cd !$ && tar xf -)
 ```
 
-_Once this repo is not private we can setup easier instructions_
+Alternatively, you can just clone the elm-d3-insights repo and delete the .git folder.
 
 ### To get started once you have an initial copy
 
