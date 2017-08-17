@@ -1,110 +1,81 @@
-@import "~bourbon/core/bourbon";
-@import "base/base";
 
-body {
-  margin: 0;
-}
+#insights-entry-point {
+  padding-bottom: 30px;
+  .content-main {
+    width: 1px; // iframe support
+    min-width: 100%;
 
-.content-main {
-  width: 1px; // iframe support
-  min-width: 100%;
-
-  .chart {
-    display: none;
-    position: relative;
-    &.show-chart {
-      display: inherit;
-    }
-    .chart-caption {
-      width: 100%;
-      text-align: center;
-      text-transform: uppercase;
-      font-size: 14px;
-      margin-bottom: 20px;
-    }
-    .chart-annotation {
-      position: absolute;
-      right: 10%;
-      top: 5%;
-    }
-    .chart-wrapper {
-      position: relative;
-  .d3-wrapper {
-    .bar {
-      fill: thistle;
-    }
-
-    .bar:hover {
-      fill: brown;
-    }
-
-    .axis {
-      font: 10px $base-font-family;
-    }
-
-    .axis path,
-    .axis line {
-      fill: none;
-      stroke: #111;
-      shape-rendering: crispEdges;
-    }
-
-    .x.axis path {
+    .chart {
       display: none;
-    }
-  }
-  }
-}
+      position: relative;
+      &.show-chart {
+        display: inherit;
+      }
+      .chart-caption {
+        width: 100%;
+        text-align: center;
+        text-transform: uppercase;
+        font-size: 14px;
+        margin-bottom: 20px;
+      }
+      .chart-annotation {
+        position: absolute;
+        right: 10%;
+        top: 5%;
+      }
+      .chart-wrapper {
+        position: relative;
+    .d3-wrapper {
+      height: 300px;
+      .bar {
+        fill: thistle;
+      }
 
-  .markdown {
-    max-width: 680px;
-    margin: 12px 0;
-    ul {
-      list-style-type: circle;
-    }
-  }
+      .bar:hover {
+        fill: brown;
+      }
 
-  body {
-    margin: 0;
-  }
+      .axis {
+        font-size: 10px;
+      }
 
-  .splash {
-    width: 100%;
-    height: 60vh;
-    min-height: 350px;
-    background-image: url(/images/elaine-casap-86010.jpg);
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center bottom;
-    position: relative;
-    &:after {
-      content: 'Image: Elaine Casap - https://unsplash.com/@ecasap';
-      font-size: 10px;
-      position: absolute;
-      right: 2px;
-      top: 2px;
-      color: #555;
-    }
-    img,
-    .splash-text {
-      position: absolute;
-      right: 50px;
-      bottom: 10px;
-      color: white;
-      font-size: 48px;
-    }
-  }
+      .axis path,
+      .axis line {
+        fill: none;
+        stroke: #111;
+        shape-rendering: crispEdges;
+      }
 
-  .content {
-    max-width: 900px;
-    margin: 0 auto;
-    .button-wrap {
-      display: flex;
-      align-items: flex-end;
-      button {
-        margin-left: 40px;
+      .x.axis path {
+        display: none;
       }
     }
+    }
   }
 
+    .markdown {
+      max-width: 680px;
+      margin: 12px 0;
+      ul {
+        list-style-type: circle;
+      }
+    }
+
+    body {
+      margin: 0;
+    }
+
+    .content {
+      max-width: 900px;
+      margin: 0 auto;
+      .button-wrap {
+        display: flex;
+        align-items: flex-end;
+        button {
+          margin-left: 40px;
+        }
+      }
+    }
+
+  }
 }

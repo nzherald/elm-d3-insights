@@ -60,7 +60,7 @@ export default (d3data, port) => {
     const chart = conventions({parentSel: sel,
       margin: {top: 20, right: 20, bottom: 30, left: 40},
       totalWidth: rect.width,
-      totalHeight: rect.height
+      totalHeight: 240
     });
 
     const x = scaleBand()
@@ -89,12 +89,6 @@ export default (d3data, port) => {
       chart.width = rect.width - chart.margin.left - chart.margin.right
       update(chart, 'x', x => x.range([0, chart.width]))
       svgNode.attr('width', rect.width)
-    }
-    if (rect.height !== chart.totalHeight) {
-      chart.totalHeight = rect.height
-      chart.height = rect.height - chart.margin.top - chart.margin.bottom
-      update(chart, 'y', y => y.range([chart.height, 0]))
-      svgNode.attr('height', rect.height)
     }
     update(chart, 'x', x => x.domain(data.map(d => { return d[0]; })));
     update(chart, 'y', y => y.domain([0, max(data, d => { return d[1]; })]))

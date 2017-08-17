@@ -1,0 +1,3 @@
+<% for (var chunk in htmlWebpackPlugin.files.chunks) { %>
+$.getScript("//s3.newsapps.nz<%= htmlWebpackPlugin.files.chunks[chunk].entry %>");
+<% } %>

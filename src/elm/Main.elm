@@ -124,8 +124,8 @@ update msg model =
             }
                 ! []
 
-        Resize _ ->
-            model ! [ export model ]
+        Resize size ->
+            model ! [ export model, sizeChanged size ]
 
 
 view : Model -> Html Msg
@@ -144,11 +144,7 @@ view { paragraphs, data, showChart, clicked } =
                 ]
     in
         div [ class "content-main" ]
-            [ div [ class "splash" ]
-                [ div [ class "splash-text" ] []
-                , img [ src "/images/insights-masthead.png" ] []
-                ]
-            , div [ class "content" ]
+            [ div [ class "content" ]
                 [ Markdown.toHtml [ class "markdown" ] paragraphs.intro
                 , div [ class "button-wrap" ]
                     [ div []
@@ -181,7 +177,7 @@ decodeData =
 
 
 getData =
-    Http.get "/data/data.json" decodeData
+    Http.get "http://s3.newsapps.nz/template/data/data.json" decodeData
         |> Http.send LoadData
 
 
@@ -189,6 +185,9 @@ port exportData : D3Data -> Cmd msg
 
 
 port barClick : (( Int, ( String, Float ) ) -> msg) -> Sub msg
+
+
+port sizeChanged : Size -> Cmd msg
 
 
 subscriptions : Model -> Sub Msg

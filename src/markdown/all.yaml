@@ -4,7 +4,7 @@ intro: >
   This is a [webpack](https://webpack.github.io/) based template designed to make it
   quick to get up and running
   with [d3](https://d3js.org), [d3-jetpack](https://github.com/gka/d3-jetpack),
-  [elm-lang](http://elm-lang.org), [sass](http://sass-lang.com/), [bourbon with bitters](http://bourbon.io)
+  [elm-lang](http://elm-lang.org), [sass](http://sass-lang.com/),
   and [markdown](https://daringfireball.net/projects/markdown/) for text blocks (_like this one_).
 
 

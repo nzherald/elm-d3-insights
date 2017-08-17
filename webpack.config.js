@@ -5,14 +5,14 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
     entry: {
-        app: './src/app.js',
+        app: './src/app.js'
     },
     resolve: {
         modules: [path.resolve(__dirname, './src'), 'node_modules']
     },
     output: {
         path: path.resolve(__dirname, './dist'),
-        publicPath: '/',
+        publicPath: '/template/',
         filename: '[name].[chunkhash].js'
     },
     devServer: {
@@ -62,16 +62,22 @@ module.exports = {
       favicon: 'src/images/favicon.ico',
       title: 'NZH Insights'
     }),
+    new HtmlWebpackPlugin({
+        template: 'src/embed.ejs',
+        filename: 'embed.js',
+        inject: false,
+    }),
     new CopyWebpackPlugin([
       { from: 'assets/data', to: 'data' },
-      { from: 'assets/images', to: 'images' }
+      { from: 'assets/images', to: 'images' },
+      { from: 'assets/embed.html', to: 'embed.html' }
     ]),
      new webpack.optimize.CommonsChunkPlugin({
-       name: 'vendor',
-       minChunks: function (module) {
+       name: 'common'
+       // minChunks: function (module) {
           // this assumes your vendor imports exist in the node_modules directory
-          return module.context && module.context.indexOf('node_modules') !== -1;
-          }
+          // return module.context && module.context.indexOf('node_modules') !== -1;
+          // }
      })
   ]
 };
